@@ -1,4 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateMovieDto } from './dto/create-movie.dto';
+import { UpdateMovieDto } from './dto/update-movie.dto';
 import { Movie } from './entities/movie.entity';
 
 @Injectable()
@@ -9,23 +11,21 @@ export class MoviesService {
     return this.movies;
   }
 
-  getOne(id: string): Movie {
-    const target = this.movies.find((movie) => movie.id === parseInt(id));
-    // +를 붙여도 string타입으로 들어온 숫자를 number 타입으로 바꿀 수 있음
-    // ex) return this.movies.find((movie) => movie.id === +id);
+  getOne(id: number): Movie {
+    const target = this.movies.find((movie) => movie.id === id);
     if (!target) {
       throw new NotFoundException(`Movie with id: ${id} not found`);
     }
     return target;
   }
 
-  deleteOne(id: string): string {
+  deleteOne(id: number): string {
     this.getOne(id);
-    this.movies = this.movies.filter((movie) => movie.id !== +id);
+    this.movies = this.movies.filter((movie) => movie.id !== id);
     return 'movie deleted!';
   }
 
-  create(movieData): string {
+  createOne(movieData: CreateMovieDto): string {
     this.movies.push({
       id: this.movies.length + 1,
       ...movieData,
@@ -33,8 +33,8 @@ export class MoviesService {
     return 'movie created!';
   }
 
-  update(id: string, updateData): string {
-    const idx = this.movies.findIndex((movie) => movie.id === +id);
+  updateOne(id: number, updateData: UpdateMovieDto): string {
+    const idx = this.movies.findIndex((movie) => movie.id === id);
     this.movies[idx] = {
       ...this.movies[idx],
       ...updateData,
